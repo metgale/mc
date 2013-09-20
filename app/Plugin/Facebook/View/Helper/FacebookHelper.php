@@ -123,9 +123,9 @@ class FacebookHelper extends AppHelper {
 				'img' => false,
 				'alt' => '',
 				'id' => '',
-				//'show-faces' => true,	// fb button only
-				//'width' => 200,			// fb button only
-				//'max-rows' => 1			// fb button only
+				'show-faces' => true,	// fb button only
+				'width' => 200,			// fb button only
+				'max-rows' => 1			// fb button only
 			),
 			$options
 		);

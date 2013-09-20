@@ -49,7 +49,6 @@ class AppController extends Controller {
             ),
             'Facebook.Connect' => array('model' => 'User')
         );
-
 	public function isAuthorized(){
 		true;
 	}
@@ -58,4 +57,7 @@ class AppController extends Controller {
 		parent::beforeFilter();
 		$this->set('user',  $this->Connect->user());
 	}
+
+	
 }
+

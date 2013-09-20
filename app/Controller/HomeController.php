@@ -19,23 +19,30 @@ class HomeController extends AppController {
 		);
 		$latestAlbums = $this->Album->find('all', $options);
 		$this->set('latestAlbums', $latestAlbums);
-		debug($latestAlbums);
-	}
-
-	public function index2() {
-		//Create Queryž
+		
 		$userId = $this->Connect->user('id');
-		debug($userId);
 		$params = array(
 			'method' => 'fql.query',
 			'query' => "SELECT uid, name, pic FROM user WHERE uid IN (SELECT uid2 FROM friend WHERE uid1 = $userId)
 			AND is_app_user = 1",
 		);
+		$friends = $this->Connect->FB->api($params);
+		$this->set('friends', $friends);
+	
+		
+	}
 
+	public function index2() {
+		//Create Queryž
+		$userId = $this->Connect->user('id');
+		$params = array(
+			'method' => 'fql.query',
+			'query' => "SELECT uid, name, pic FROM user WHERE uid IN (SELECT uid2 FROM friend WHERE uid1 = $userId)
+			AND is_app_user = 1",
+		);
 		$friends = $this->Connect->FB->api($params);
 		debug($friends);
 	}
-
 }
 
 ?>

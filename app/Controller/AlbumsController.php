@@ -52,7 +52,9 @@ class AlbumsController extends AppController {
 		if (!$this->Album->exists($id)) {
 			throw new NotFoundException(__('Invalid album'));
 		}
-		$options = array('conditions' => array('Album.' . $this->Album->primaryKey => $id));
+		$options = array(
+			'contain' => array('Artist'),
+			'conditions' => array('Album.' . $this->Album->primaryKey => $id));
 		$this->set('album', $this->Album->find('first', $options));
 	}
 
