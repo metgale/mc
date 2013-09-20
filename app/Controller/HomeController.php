@@ -28,21 +28,11 @@ class HomeController extends AppController {
 		);
 		$friends = $this->Connect->FB->api($params);
 		$this->set('friends', $friends);
-	
+		debug($friends);
 		
 	}
 
-	public function index2() {
-		//Create Queryž
-		$userId = $this->Connect->user('id');
-		$params = array(
-			'method' => 'fql.query',
-			'query' => "SELECT uid, name, pic FROM user WHERE uid IN (SELECT uid2 FROM friend WHERE uid1 = $userId)
-			AND is_app_user = 1",
-		);
-		$friends = $this->Connect->FB->api($params);
-		debug($friends);
-	}
+	
 }
 
 ?>

@@ -1,5 +1,7 @@
 <?php
+
 App::uses('AppModel', 'Model');
+
 /**
  * Album Model
  *
@@ -8,14 +10,12 @@ App::uses('AppModel', 'Model');
 class Album extends AppModel {
 
 	public $displayField = 'title';
-
 	public $belongsTo = array(
 		'Artist' => array(
 			'className' => 'Artist',
 			'foreignKey' => 'artist_id',
 		)
 	);
-	
 	public $hasMany = array(
 		'Collection' => array(
 			'className' => 'Collection',
@@ -26,6 +26,11 @@ class Album extends AppModel {
 			'className' => 'Wishlist',
 			'foreignKey' => 'album_id',
 			'dependent' => false,
-		)		
-	);
+		),
+		'Comment' => array(
+			'className' => 'Comment',
+			'foreignKey' => 'album_id',
+			'dependent' => false,
+	));
+
 }

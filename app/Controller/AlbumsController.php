@@ -1,5 +1,7 @@
 <?php
+
 App::uses('AppController', 'Controller');
+
 /**
  * Albums Controller
  *
@@ -8,47 +10,49 @@ App::uses('AppController', 'Controller');
  */
 class AlbumsController extends AppController {
 
-/**
- * Components
- *
- * @var array
- */
+	public $uses = array('User', 'Collection', 'Wishlist', 'Artist', 'Comment', 'Album');
+
+	/**
+	 * Components
+	 *
+	 * @var array
+	 */
 	public $components = array('Paginator');
 
-/**
- * index method
- *
- * @return void
- */
+	/**
+	 * index method
+	 *
+	 * @return void
+	 */
 	public function index() {
 		$this->Album->recursive = 0;
 		$this->set('albums', $this->Paginator->paginate());
 	}
-	
-	public function addToCollection($albumId){
+
+	public function addToCollection($albumId) {
 		$data['facebook_id'] = $this->Connect->user('id');
 		$data['album_id'] = $albumId;
 		$this->Album->Collection->create();
 		$this->Album->Collection->save($data);
 		$this->redirect($this->request->referer());
 	}
-	
-	public function addToWishlist($albumId){
+
+	public function addToWishlist($albumId) {
 		$data['facebook_id'] = $this->Connect->user('id');
 		$data['album_id'] = $albumId;
 		$this->Album->Wishlist->create();
 		$this->Album->Wishlist->save($data);
 		$this->redirect($this->request->referer());
 	}
-	
-/**
- * view method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
-	public function view($id = null) {
+
+	/**
+	 * view method
+	 *
+	 * @throws NotFoundException
+	 * @param string $id
+	 * @return void
+	 */
+	public function view($id) {
 		if (!$this->Album->exists($id)) {
 			throw new NotFoundException(__('Invalid album'));
 		}
@@ -56,13 +60,44 @@ class AlbumsController extends AppController {
 			'contain' => array('Artist'),
 			'conditions' => array('Album.' . $this->Album->primaryKey => $id));
 		$this->set('album', $this->Album->find('first', $options));
+
+
+		$this->paginate = array(
+			'Comment' => array(
+				'conditions' => array(
+					'Comment.album_id' => $id),
+				'order' => 'Comment.created DESC',
+				'contain' => array('User'),
+				'limit' => 10
+		));
+		$comments = $this->paginate('Comment');
+		$this->set('comments', $comments);
+
+		if (!$this->request->is('post')) {
+			return false;
+		}
+		if (empty($this->request->data)) {
+			$this->Session->setFlash('Niste unijeli komentar');
+			return false;
+		}
+		$this->request->data['Comment']['user_id'] = $this->Auth->user('id');
+		$this->request->data['Comment']['album_id'] = $id;
+		if ($this->Album->Comment->save($this->request->data)) {
+			$this->Session->setFlash(
+					('Hvala na komentaru :)'), 'alert', array(
+				'plugin' => 'TwitterBootstrap',
+				'class' => 'alert-success'
+					)
+			);
+			$this->redirect(array('controller' => 'albums', 'action' => 'view', $id, '#' => 'comments'));
+		}
 	}
 
-/**
- * add method
- *
- * @return void
- */
+	/**
+	 * add method
+	 *
+	 * @return void
+	 */
 	public function add() {
 		if ($this->request->is('post')) {
 			$this->Album->create();
@@ -77,13 +112,13 @@ class AlbumsController extends AppController {
 		$this->set(compact('artists'));
 	}
 
-/**
- * edit method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
+	/**
+	 * edit method
+	 *
+	 * @throws NotFoundException
+	 * @param string $id
+	 * @return void
+	 */
 	public function edit($id = null) {
 		if (!$this->Album->exists($id)) {
 			throw new NotFoundException(__('Invalid album'));
@@ -103,13 +138,13 @@ class AlbumsController extends AppController {
 		$this->set(compact('artists'));
 	}
 
-/**
- * delete method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
+	/**
+	 * delete method
+	 *
+	 * @throws NotFoundException
+	 * @param string $id
+	 * @return void
+	 */
 	public function delete($id = null) {
 		$this->Album->id = $id;
 		if (!$this->Album->exists()) {
@@ -122,4 +157,6 @@ class AlbumsController extends AppController {
 			$this->Session->setFlash(__('The album could not be deleted. Please, try again.'));
 		}
 		return $this->redirect(array('action' => 'index'));
-	}}
+	}
+
+}

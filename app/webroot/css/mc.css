@@ -26,3 +26,9 @@
 	padding-bottom: 25px;	
 }
 
+.metadata{
+	color:#999;
+}
+.dl-horizontal  {
+	list-style-type: none;
+}
