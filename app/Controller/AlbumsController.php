@@ -10,7 +10,7 @@ App::uses('AppController', 'Controller');
  */
 class AlbumsController extends AppController {
 
-	public $uses = array('User', 'Collection', 'Wishlist', 'Artist', 'Comment', 'Album');
+	public $uses = array('Album', 'Wishlist', 'Artist', 'Comment');
 
 	/**
 	 * Components
@@ -22,26 +22,121 @@ class AlbumsController extends AppController {
 	/**
 	 * index method
 	 *
-	 * @return void
+	 * Shows all albums
 	 */
 	public function index() {
-		$this->Album->recursive = 0;
-		$this->set('albums', $this->Paginator->paginate());
+		$this->paginate = array(
+			'limit' => 9,
+			'order' => 'Album.created DESC',
+			'contain' => array('Artist'),
+		);
+		$this->set('albums', $this->paginate());
+	}
+
+	public function search() {
+		$keyword = trim($this->request->query('keyword'));
+		if (strlen($keyword) < 3) {
+			$this->Session->setFlash(
+					('Your search has to include at least three chars...'), 'alert', array(
+				'plugin' => 'TwitterBootstrap',
+				'class' => 'alert-danger'
+					)
+			);
+			$this->redirect($this->request->referer());
+		}
+
+		$options = array(
+			'contain' => array(
+				'Artist'
+			),
+			'conditions' => array(
+				'Album.title LIKE' => '%' . $keyword . '%'
+			)
+		);
+
+		$albums = $this->Album->find('all', $options);
+		$this->set('albums', $albums);
+
+		$options = array(
+			'conditions' => array(
+				'Artist.title LIKE' => '%' . $keyword . '%'
+			)
+		);
+		$artists = $this->Album->Artist->find('all', $options);
+		$this->set('artists', $artists);
 	}
 
 	public function addToCollection($albumId) {
-		$data['facebook_id'] = $this->Connect->user('id');
+		$user_id = $this->Auth->user('id');
+		$data['user_id'] = $user_id;
 		$data['album_id'] = $albumId;
 		$this->Album->Collection->create();
 		$this->Album->Collection->save($data);
+
+		$options = array(
+			'conditions' => array(
+				'Wishlist.user_id' => $user_id,
+				'Wishlist.album_id' => $albumId
+		));
+		$wishlist = $this->Album->Wishlist->find('first', $options);
+		if ($wishlist) {
+			$this->Album->Wishlist->deleteAll(array(
+				'user_id' => $user_id,
+				'album_id' => $albumId
+			));
+		}
+		$this->Session->setFlash(
+				('Album added to your collection'), 'alert', array(
+			'plugin' => 'TwitterBootstrap',
+			'class' => 'alert-success'
+				)
+		);
+		$this->redirect($this->request->referer());
+	}
+
+	public function deleteFromCollection($albumId) {
+		$user_id = $this->Auth->user('id');
+
+		$this->Album->Collection->deleteAll(array(
+			'user_id' => $user_id,
+			'album_id' => $albumId
+		));
+		$this->Session->setFlash(
+				('Album removed from your collection'), 'alert', array(
+			'plugin' => 'TwitterBootstrap',
+			'class' => 'alert-success'
+				)
+		);
 		$this->redirect($this->request->referer());
 	}
 
 	public function addToWishlist($albumId) {
-		$data['facebook_id'] = $this->Connect->user('id');
+		$data['user_id'] = $this->Auth->user('id');
 		$data['album_id'] = $albumId;
 		$this->Album->Wishlist->create();
 		$this->Album->Wishlist->save($data);
+		$this->Session->setFlash(
+				('Album added to your wishlist'), 'alert', array(
+			'plugin' => 'TwitterBootstrap',
+			'class' => 'alert-success'
+				)
+		);
+		$this->redirect($this->request->referer());
+	}
+
+	public function deleteFromWishlist($albumId) {
+		$user_id = $this->Auth->user('id');
+
+		$this->Album->Wishlist->deleteAll(array(
+			'user_id' => $user_id,
+			'album_id' => $albumId
+		));
+		$this->Session->setFlash(
+				('Album removed from your wishlist'), 'alert', array(
+			'plugin' => 'TwitterBootstrap',
+			'class' => 'alert-success'
+				)
+		);
 		$this->redirect($this->request->referer());
 	}
 
@@ -53,13 +148,42 @@ class AlbumsController extends AppController {
 	 * @return void
 	 */
 	public function view($id) {
+		$options = array(
+			'conditions' => array(
+				'Collection.user_id' => $this->Auth->user('id'),
+				'Collection.album_id' => $id
+			)
+		);
+		$coll = $this->Album->Collection->find('all', $options);
+		$this->set('coll', $coll);
+
+
+		$options = array(
+			'conditions' => array(
+				'Wishlist.user_id' => $this->Auth->user('id'),
+				'Wishlist.album_id' => $id
+			)
+		);
+		$wish = $this->Album->Wishlist->find('all', $options);
+		$this->set('wish', $wish);
+
+
+
+
 		if (!$this->Album->exists($id)) {
 			throw new NotFoundException(__('Invalid album'));
 		}
 		$options = array(
 			'contain' => array('Artist'),
 			'conditions' => array('Album.' . $this->Album->primaryKey => $id));
-		$this->set('album', $this->Album->find('first', $options));
+		$album = $this->Album->find('first', $options);
+		$this->set('album', $album);
+
+		$options = array(
+			'conditions' => array('Album.artist_id' => $album['Album']['artist_id'])
+		);
+		$relatedAlbums = $this->Album->find('all', $options);
+		$this->set('relatedAlbums', $relatedAlbums);
 
 
 		$this->paginate = array(

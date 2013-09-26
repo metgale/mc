@@ -1,17 +1,33 @@
-.m{
-	margin-top: 85px;
+body{
+	margin-top: 90px;
 }
 
+#albums-view #comments{
+	margin-top:50px;
+	border-top:1px solid #999;
+	border-bottom:1px solid #999;
+}
+
+.user-index .media{
+	height:100px;
+}
 .user-index .media-object{
-	height: 120px;
+	height: 100px;
 	widht: 100px;
 }
 
+.nav li{
+	padding-top:8px;
+}
+#form{
+	padding-top:8px;
+
+}
 .home-index .media-object{
 	height: 150px;
 	widht: 120px;
 }
-.home-index .btn{
+#albums-view .btn{
 	margin-left: 10px;
 }
 .user-index .media-body{
@@ -25,10 +41,19 @@
 	padding-top: 25px;
 	padding-bottom: 25px;	
 }
+#rightinfo ul li{
+	list-style-type: none; 
+	
+}
 
 .metadata{
 	color:#999;
 }
 .dl-horizontal  {
 	list-style-type: none;
+}
+
+.border{
+	margin-top: 10px;
+	border-bottom: 1px solid #eee;
 }

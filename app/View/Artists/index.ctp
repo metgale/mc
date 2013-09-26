@@ -1,46 +1,18 @@
-<div class="row-fluid">
-	<div class="span9">
-		<h2><?php echo __('List %s', __('Artists'));?></h2>
-
-		<p>
-			<?php echo $this->BootstrapPaginator->counter(array('format' => __('Page {:page} of {:pages}, showing {:current} records out of {:count} total, starting on record {:start}, ending on {:end}')));?>
-		</p>
-
-		<table class="table">
-			<tr>
-				<th><?php echo $this->BootstrapPaginator->sort('id');?></th>
-				<th><?php echo $this->BootstrapPaginator->sort('title');?></th>
-				<th><?php echo $this->BootstrapPaginator->sort('about');?></th>
-				<th><?php echo $this->BootstrapPaginator->sort('created');?></th>
-				<th><?php echo $this->BootstrapPaginator->sort('modified');?></th>
-				<th class="actions"><?php echo __('Actions');?></th>
-			</tr>
-		<?php foreach ($artists as $artist): ?>
-			<tr>
-				<td><?php echo h($artist['Artist']['id']); ?>&nbsp;</td>
-				<td><?php echo h($artist['Artist']['title']); ?>&nbsp;</td>
-				<td><?php echo h($artist['Artist']['about']); ?>&nbsp;</td>
-				<td><?php echo h($artist['Artist']['created']); ?>&nbsp;</td>
-				<td><?php echo h($artist['Artist']['modified']); ?>&nbsp;</td>
-				<td class="actions">
-					<?php echo $this->Html->link(__('View'), array('action' => 'view', $artist['Artist']['id'])); ?>
-					<?php echo $this->Html->link(__('Edit'), array('action' => 'edit', $artist['Artist']['id'])); ?>
-					<?php echo $this->Form->postLink(__('Delete'), array('action' => 'delete', $artist['Artist']['id']), null, __('Are you sure you want to delete # %s?', $artist['Artist']['id'])); ?>
-				</td>
-			</tr>
-		<?php endforeach; ?>
-		</table>
-
-		<?php echo $this->BootstrapPaginator->pagination(); ?>
-	</div>
-	<div class="span3">
-		<div class="well" style="padding: 8px 0; margin-top:8px;">
-		<ul class="nav nav-list">
-			<li class="nav-header"><?php echo __('Actions'); ?></li>
-			<li><?php echo $this->Html->link(__('New %s', __('Artist')), array('action' => 'add')); ?></li>
-			<li><?php echo $this->Html->link(__('List %s', __('Albums')), array('controller' => 'albums', 'action' => 'index')); ?> </li>
-			<li><?php echo $this->Html->link(__('New %s', __('Album')), array('controller' => 'albums', 'action' => 'add')); ?> </li>
-		</ul>
+<div class="user-index">
+	<h1>Albums</h1>
+	<?php echo $this->Paginator->sort('title', 'Sort by artist title'); ?>
+	<a class="pull-right" href="/artists/add">Add Artist</a></li>
+<?php foreach ($artists as $artist): ?>
+	<div class="media">
+		<a class="pull-left" href="#">
+			<img class ="media-object" src="<?php echo $artist['Artist']['cover'] ?>">
+		</a>
+		<div class="media-body">
+			<div class="media-heading">
+				<h3><?php echo $this->Html->link($artist['Artist']['title'], array('controller' => 'artists', 'action' => 'view', $artist['Artist']['id'])) ?></h3>
+				<p><?php echo $artist['Artist']['about'] ?></p>	</div>
 		</div>
 	</div>
+	<div class='border'></div>
+<?php endforeach; ?>
 </div>

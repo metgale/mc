@@ -16,6 +16,14 @@
 					'required' => 'required',
 					'helpInline' => '<span class="label label-important">' . __('Required') . '</span>&nbsp;')
 				);
+				echo $this->BootstrapForm->input('songs', array(
+					'required' => 'required',
+					'helpInline' => '<span class="label label-important">' . __('Required') . '</span>&nbsp;')
+				);
+				echo $this->BootstrapForm->input('cover', array(
+					'required' => 'required',
+					'helpInline' => '<span class="label label-important">' . __('Required') . '</span>&nbsp;')
+				);
 				echo $this->BootstrapForm->input('about', array(
 					'required' => 'required',
 					'helpInline' => '<span class="label label-important">' . __('Required') . '</span>&nbsp;')
@@ -33,11 +41,7 @@
 			<li><?php echo $this->Form->postLink(__('Delete'), array('action' => 'delete', $this->Form->value('Album.id')), null, __('Are you sure you want to delete # %s?', $this->Form->value('Album.id'))); ?></li>
 			<li><?php echo $this->Html->link(__('List %s', __('Albums')), array('action' => 'index'));?></li>
 			<li><?php echo $this->Html->link(__('List %s', __('Artists')), array('controller' => 'artists', 'action' => 'index')); ?></li>
-			<li><?php echo $this->Html->link(__('New %s', __('Artist')), array('controller' => 'artists', 'action' => 'add')); ?></li>
-			<li><?php echo $this->Html->link(__('List %s', __('Collections')), array('controller' => 'collections', 'action' => 'index')); ?></li>
-			<li><?php echo $this->Html->link(__('New %s', __('Collection')), array('controller' => 'collections', 'action' => 'add')); ?></li>
-			<li><?php echo $this->Html->link(__('List %s', __('Wishlists')), array('controller' => 'wishlists', 'action' => 'index')); ?></li>
-			<li><?php echo $this->Html->link(__('New %s', __('Wishlist')), array('controller' => 'wishlists', 'action' => 'add')); ?></li>
+	
 		</ul>
 		</div>
 	</div>

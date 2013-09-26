@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Application level Controller
  *
@@ -33,31 +34,48 @@ App::uses('User', 'Model');
  * @link		http://book.cakephp.org/2.0/en/controllers.html#the-app-controller
  */
 class AppController extends Controller {
+
 	public $helpers = array(
 		'Html' => array('className' => 'TwitterBootstrap.BootstrapHtml'),
 		'Form' => array('className' => 'TwitterBootstrap.BootstrapForm'),
 		'Paginator' => array('className' => 'TwitterBootstrap.BootstrapPaginator'),
 	);
 	
-	public $components = array('Session',
-            'Auth' => array(
-                'authenticate' => array(
-                    'Form' => array(
-                        'fields' => array('username' => 'email')
-                    )
-                ),
-            ),
-            'Facebook.Connect' => array('model' => 'User')
-        );
-	public function isAuthorized(){
-		true;
-	}
-	
-	public function beforeFilter() {
-		parent::beforeFilter();
-		$this->set('user',  $this->Connect->user());
+	public $components = array(
+		'Session',
+		'Auth' => array(
+			'loginAction' => array(
+				'controller' => 'users',
+				'action' => 'login'
+			),
+			'loginRedirect' => array(
+				'controller' => 'users',
+				'action' => 'login'
+			),
+			'authError' => 'Did you really think you are allowed to see that?',
+			'authenticate' => array(
+				'FacebookAuth.Facebook' => array(
+					'fields' => array(
+						'username' => 'email',
+						'password' => 'password'
+					)
+				)
+			)
+		)
+	);
+
+	public function isAuthorized() {
+		return true;
 	}
 
-	
+	public function beforeFilter() {
+		parent::beforeFilter();
+		$this->Auth->authenticate['FacebookAuth.Facebook']['application'] = array(
+			'id' => Configure::read('facebook.app_id'),
+			'secret' => Configure::read('facebook.app_secret')
+		);
+		//$this->Auth->allowedActions = array_merge($this->Auth->allowedActions, array('login'));
+	}
+
 }
 

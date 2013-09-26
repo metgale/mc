@@ -1,20 +1,39 @@
 <div id="albums-view">
-	<ul class="leftinfo span3">
-		<img class = "media-object" src = "<?php echo $album['Album']['cover'] ?>"> 
-	</ul>
-	<div id='rightinfo' class="span7">
-		<h2><?php echo $album['Album']['title'], $album['Album']['year']?></h2>
-		<h3>Made by <?php echo $album['Artist']['title'] ?></h3>
-		<blockquote> <?php echo $album['Album']['about']; ?> </blockquote>	
+	<div>
+		<ul class="leftinfo span3">
+			<img class = "media-object" src = "<?php echo $album['Album']['cover'] ?>"> 
+		</ul>
+		<a class="pull-right" href="/albums/edit/<?php echo $album['Album']['id']?>">Edit Album</a>
+		<div id='rightinfo' class="span7">
+			<h2><?php echo $album['Album']['title'] ?></h2>	
+			<h4>Year: <?php echo $album['Album']['year']; ?></h4>
 
-		<h4>Year: <?php echo $album['Album']['year']; ?></h4>
+			<h3><?php echo $this->Html->link($album['Artist']['title'], array('controller' => 'artists', 'action' => 'view', $album['Artist']['id'])) ?></h3>
+			<blockquote> <?php echo $album['Album']['about']; ?> </blockquote>
+			<h4>Songs:</h4><?php echo nl2br($album['Album']['songs']) ?>
 
+			<?php if (!$coll): ?> 
+				<?php if (!$wish): ?>
+					<a href="/albums/addToWishlist/<?php echo $album['Album']['id'] ?>" class="btn btn-primary btn-small pull-right">Add to Wishlist</a>
+				<?php else: ?>
+					<a href="/albums/deleteFromWishlist/<?php echo $album['Album']['id'] ?>" class="btn btn-warning btn-small pull-right">Remove from Wishlist</a>
+
+				<?php endif; ?>
+				<a href="/albums/addToCollection/<?php echo $album['Album']['id'] ?>" class="btn btn-primary btn-small pull-right">Add to Collection</a>
+			<?php else: ?>
+				<a href="/albums/deleteFromCollection/<?php echo $album['Album']['id'] ?>" class="btn btn-warning btn-small pull-right">Remove from Collection</a>
+			<?php endif; ?>
+
+
+		</div>
 
 	</div>
+
+
 	<div class="row">
 		<?php if (!empty($comments)): ?>
 			<div id="comments" class="span8 offset2">
-				<h3>Komentari</h3>
+				<h3>Comments</h3>
 				<ol class="comments dl-horizontal">
 					<?php foreach ($comments as $comment): ?>
 						<li class="comment">
@@ -31,9 +50,9 @@
 		<?php endif; ?>
 		<?php if (AuthComponent::user()): ?>
 			<div class="span8 offset2">
-				<?php echo $this->Form->create('Comment', array('class' => 'form-horizontal')); ?>
+				<?php echo $this->Form->create('Comment', array('class' => 'form')); ?>
 				<fieldset>
-					<legend>Komentiraj</legend>
+					<legend>Leave a comment here</legend>
 					<?php
 					echo $this->Form->input('content', array(
 						'required' => 'required',
@@ -43,7 +62,7 @@
 					));
 					?>
 					<div class="form-actions">
-						<button type="submit" class="btn btn-primary">Pošalji komentar</button>
+						<button type="submit" class="btn btn-primary">Post Comment</button>
 					</div>
 				</fieldset>
 				<?php echo $this->Form->end(); ?>
@@ -51,15 +70,3 @@
 		<?php endif; ?>
 	</div>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-

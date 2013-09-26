@@ -1,5 +1,7 @@
 <?php
+
 App::uses('AppController', 'Controller');
+
 /**
  * Artists Controller
  *
@@ -8,43 +10,57 @@ App::uses('AppController', 'Controller');
  */
 class ArtistsController extends AppController {
 
-/**
- * Components
- *
- * @var array
- */
+	public $uses = array('Artist');
+
+	/**
+	 * Components
+	 *
+	 * @var array
+	 */
 	public $components = array('Paginator');
 
-/**
- * index method
- *
- * @return void
- */
+	/**
+	 * index method
+	 *
+	 * @return void
+	 */
 	public function index() {
-		$this->Artist->recursive = 0;
-		$this->set('artists', $this->Paginator->paginate());
+		$this->paginate = array(
+			'limit' => 9,
+			'order' => 'Artist.created DESC',
+			'contain' => array('Album'),
+		);
+
+		$this->set('artists', $this->paginate());
 	}
 
-/**
- * view method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
-	public function view($id = null) {
+	/**
+	 * view method
+	 *
+	 * @throws NotFoundException
+	 * @param string $id
+	 * @return void
+	 */
+	public function view($id) {
 		if (!$this->Artist->exists($id)) {
 			throw new NotFoundException(__('Invalid artist'));
 		}
 		$options = array('conditions' => array('Artist.' . $this->Artist->primaryKey => $id));
 		$this->set('artist', $this->Artist->find('first', $options));
+
+		$options = array(
+			'contain' => array('Artist'),
+			'conditions' => array('Album.artist_id' => $id)
+		);
+		$albums = $this->Artist->Album->find('all', $options);
+		$this->set('albums', $albums);
 	}
 
-/**
- * add method
- *
- * @return void
- */
+	/**
+	 * add method
+	 *
+	 * @return void
+	 */
 	public function add() {
 		if ($this->request->is('post')) {
 			$this->Artist->create();
@@ -57,13 +73,13 @@ class ArtistsController extends AppController {
 		}
 	}
 
-/**
- * edit method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
+	/**
+	 * edit method
+	 *
+	 * @throws NotFoundException
+	 * @param string $id
+	 * @return void
+	 */
 	public function edit($id = null) {
 		if (!$this->Artist->exists($id)) {
 			throw new NotFoundException(__('Invalid artist'));
@@ -81,13 +97,13 @@ class ArtistsController extends AppController {
 		}
 	}
 
-/**
- * delete method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
+	/**
+	 * delete method
+	 *
+	 * @throws NotFoundException
+	 * @param string $id
+	 * @return void
+	 */
 	public function delete($id = null) {
 		$this->Artist->id = $id;
 		if (!$this->Artist->exists()) {
@@ -100,4 +116,6 @@ class ArtistsController extends AppController {
 			$this->Session->setFlash(__('The artist could not be deleted. Please, try again.'));
 		}
 		return $this->redirect(array('action' => 'index'));
-	}}
+	}
+
+}
