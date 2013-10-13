@@ -1,4 +1,4 @@
 MC
 =======
 
-Aplikacija omogućava korisniku vođenje vlastite kolekcije glazbenih albuma, kao i praćenje kolekcije vezanih Facebook korisnika koji koriste aplikaciju.
+Web app - manage your music collection. Integrated with Facebook.
